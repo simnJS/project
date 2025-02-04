@@ -5,9 +5,6 @@ services:
     networks:
       - caddy
     restart: unless-stopped
-    labels:
-      - "caddy=${DOMAIN}"
-      - "caddy.reverse_proxy={{upstreams 80}}"
 
 networks:
   caddy:
