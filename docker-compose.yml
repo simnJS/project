@@ -1,8 +1,6 @@
 services:
   safia-website:
-    build:
-      context: .
-      dockerfile: Dockerfile # assurez-vous que c'est exactement ce nom
+    build: .
     container_name: safia-website
     networks:
       - caddy
