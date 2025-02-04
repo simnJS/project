@@ -1,11 +1,12 @@
-
 services:
   safia-website:
-    build: .
-    image: safia-website:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: safia-website
     networks:
       - caddy
+    restart: unless-stopped
     labels:
       - "caddy=${DOMAIN}"
       - "caddy.reverse_proxy={{upstreams 80}}"
