@@ -9,4 +9,4 @@ RUN npm run build
 # Production stage
 FROM caddy:2-alpine
 COPY --from=builder /app/dist /usr/share/caddy
-EXPOSE 80
+EXPOSE 80 
