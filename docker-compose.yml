@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  safia-website:
+    build: .
+    image: safia-website:latest
+    container_name: safia-website
+    networks:
+      - caddy
+    labels:
+      - "caddy=${DOMAIN}"
+      - "caddy.reverse_proxy={{upstreams 80}}"
+
+networks:
+  caddy:
+    external: true
