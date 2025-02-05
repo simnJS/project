@@ -5,6 +5,8 @@ services:
     networks:
       - caddy
     restart: unless-stopped
+    ports:
+      - "3001:3001"
     labels:
       - "caddy=${DOMAIN}"
       - "caddy.reverse_proxy={{upstreams 80}}"
