@@ -1,35 +1,21 @@
-# =============================
-# 1ère étape : Build en Node
-# =============================
+# Étape 1 : Build
 FROM node:18 AS builder
-
-# Dossier de travail
 WORKDIR /app
 
-# Copier les fichiers de dépendances
+# Installer les dépendances
 COPY package*.json ./
-
-# Installer les dépendances (si vous avez un yarn.lock, adaptez la commande)
 RUN npm install
 
-# Copier l'ensemble du code
+# Copier le code et construire
 COPY . .
-
-# Lancer la construction du projet (build Next)
 RUN npm run build
 
-# Exporter le site statique (dossier /out)
-RUN npm run export
+# Étape 2 : Exécuter l'application en production
+FROM node:18-alpine
+WORKDIR /app
 
-# =============================
-# 2e étape : Serveur Caddy
-# =============================
-FROM caddy:2-alpine
+COPY --from=builder /app ./
+ENV NODE_ENV=production
 
-# Copier les fichiers statiques générés vers le répertoire par défaut de Caddy
-COPY --from=builder /app/out /usr/share/caddy
-
-# Exposer le port 80
-EXPOSE 80
-
-# Le container Caddy se lancera automatiquement avec la config par défaut
+EXPOSE 3000
+CMD ["npm", "run", "start"]
