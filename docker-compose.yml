@@ -1,26 +1,14 @@
-
 services:
-  # 1) Notre application Next.js
-  next:
+  safia-website:
     build: .
-    container_name: next
-    # Ce conteneur expose le port 3000 en interne (pas forcément besoin de le "publier" sur la machine hôte)
-    ports:
-      - "3000"
-    environment:
-      - NODE_ENV=production
+    container_name: safia-website
+    networks:
+      - caddy
+    restart: unless-stopped
+    labels:
+      - "caddy=${DOMAIN}"
+      - "caddy.reverse_proxy={{upstreams 80}}"
 
-  # 2) Notre reverse proxy Caddy
+networks:
   caddy:
-    image: caddy:latest
-    container_name: caddy
-    # On publie les ports 80 et 443 (si besoin du HTTPS)
-    ports:
-      - "80:80"
-      - "443:443"
-    # On monte notre fichier Caddyfile dans le container
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-    # On dépend du service "next"
-    depends_on:
-      - next
+    external: true
