@@ -1,37 +1,23 @@
-# Base image
-FROM node:20-alpine AS base
+# 1) Choisir une image Node alpine pour un container léger
+FROM node:16-alpine
+
+# 2) Créer et définir le répertoire de travail
 WORKDIR /app
 
-# Dependencies
-FROM base AS deps
-COPY package.json package-lock.json ./
-RUN npm ci
+# 3) Copier les fichiers package.json et package-lock.json (si présent)
+COPY package*.json ./
 
-# Builder
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
+# 4) Installer les dépendances
+RUN npm install
+
+# 5) Copier tout le code dans le container
 COPY . .
+
+# 6) Builder le projet Next.js pour la production
 RUN npm run build
 
-# Runner
-FROM base AS runner
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Create app directory
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
-USER nextjs
-
+# 7) Exposer le port 3000 (port par défaut Next.js)
 EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+# 8) Lancer l’application en mode production
+CMD ["npm", "start"]
